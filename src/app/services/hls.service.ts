@@ -25,6 +25,8 @@ export class HlsService {
   private metricsCallback?: (metrics: StreamMetrics) => void;
   private logCallback?: (log: LogEntry) => void;
   private manifestCallback?: (manifest: string) => void;
+  private segmentCallback?: (segments: any[]) => void;
+  private playbackCallback?: (currentTime: number, duration: number) => void;
   private bandwidthLimit: number = 0; // 0 means no limit
 
   constructor() {}
@@ -147,6 +149,14 @@ export class HlsService {
     this.manifestCallback = callback;
   }
 
+  onSegments(callback: (segments: any[]) => void): void {
+    this.segmentCallback = callback;
+  }
+
+  onPlayback(callback: (currentTime: number, duration: number) => void): void {
+    this.playbackCallback = callback;
+  }
+
   private setupEventListeners(): void {
     if (!this.hls) return;
 
@@ -185,6 +195,36 @@ export class HlsService {
       // Immediate update for responsive bitrate display
       setTimeout(() => this.updateMetrics(), 50);
     });
+
+    // Level loaded - get segment information
+    this.hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+      if (this.segmentCallback && data.details && data.details.fragments) {
+        this.segmentCallback(data.details.fragments);
+      }
+    });
+
+    // Fragment loading/loaded events for segment tracking
+    this.hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
+      // Fragment is being loaded
+      if (this.segmentCallback) {
+        // We'll handle this in the component
+      }
+    });
+
+    // Set up video element event listeners for playback tracking
+    if (this.videoElement) {
+      this.videoElement.addEventListener('timeupdate', () => {
+        if (this.playbackCallback && this.videoElement) {
+          this.playbackCallback(this.videoElement.currentTime, this.videoElement.duration || 0);
+        }
+      });
+
+      this.videoElement.addEventListener('loadedmetadata', () => {
+        if (this.playbackCallback && this.videoElement) {
+          this.playbackCallback(this.videoElement.currentTime, this.videoElement.duration || 0);
+        }
+      });
+    }
 
     // Error handling
     this.hls.on(Hls.Events.ERROR, (event, data) => {

@@ -1,0 +1,173 @@
+<div class="player-container">
+  <div class="video-section">
+    <div class="video-wrapper">
+      <video 
+        #videoElement 
+        class="video-player" 
+        controls 
+        preload="metadata"
+        [poster]="currentStream?.thumbnail"
+      >
+        Your browser does not support the video tag.
+      </video>
+      
+      <div class="video-overlay" *ngIf="!currentStream">
+        <div class="overlay-content">
+          <h2>🎬 Select a Stream</h2>
+          <p>Choose a video stream from the home page to start watching</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="video-info" *ngIf="currentStream">
+      <h2>{{ currentStream.title }}</h2>
+      <p class="video-description">{{ currentStream.description }}</p>
+      
+      <div class="video-stats">
+        <div class="stat-item">
+          <span class="stat-label">Quality:</span>
+          <span class="stat-value">{{ metrics.quality || 'Auto' }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Bitrate:</span>
+          <span class="stat-value">{{ (metrics.bitrate / 1000).toFixed(0) }} kbps</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Buffer:</span>
+          <span class="stat-value">{{ metrics.bufferHealth.toFixed(1) }}s</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls-section">
+    <div class="dev-toggle">
+      <button 
+        class="toggle-btn" 
+        [class.active]="developerMode"
+        (click)="developerMode = !developerMode"
+      >
+        🔧 {{ developerMode ? 'Hide' : 'Show' }} Dev Tools
+      </button>
+    </div>
+
+    <div class="dev-tools" *ngIf="developerMode">
+      <div class="dev-panel">
+        <h3>🛠️ Developer Tools</h3>
+        <div class="dev-tabs">
+          <button 
+            class="tab-btn" 
+            [class.active]="activeTab === 'console'"
+            (click)="activeTab = 'console'"
+          >
+            Console
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="activeTab === 'manifest'"
+            (click)="activeTab = 'manifest'"
+          >
+            Manifest
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="activeTab === 'segments'"
+            (click)="activeTab = 'segments'"
+          >
+            Segments
+          </button>
+        </div>
+        
+        <div class="tab-content">
+          <div *ngIf="activeTab === 'console'" class="console-panel">
+            <div class="console-output">
+              <div *ngFor="let log of consoleLogs" class="log-entry" [class]="log.level">
+                <span class="log-time">{{ log.timestamp | date:'HH:mm:ss.SSS' }}</span>
+                <span class="log-level">{{ log.level.toUpperCase() }}</span>
+                <span class="log-message">{{ log.message }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="activeTab === 'manifest'" class="manifest-panel">
+            <pre class="manifest-content">{{ manifestContent || 'No manifest loaded' }}</pre>
+          </div>
+          
+          <div *ngIf="activeTab === 'segments'" class="segments-panel">
+            <div class="segments-timeline">
+              <div class="timeline-header">
+                <div class="timeline-info">
+                  <span class="info-item">Total Segments: {{ segments.length }}</span>
+                  <span class="info-item">Current: {{ currentSegmentIndex + 1 }}</span>
+                  <span class="info-item">Buffer: {{ bufferedSegments }} segments</span>
+                </div>
+                <div class="timeline-legend">
+                  <span class="legend-item"><span class="legend-color loaded"></span>Loaded</span>
+                  <span class="legend-item"><span class="legend-color playing"></span>Playing</span>
+                  <span class="legend-item"><span class="legend-color buffered"></span>Buffered</span>
+                  <span class="legend-item"><span class="legend-color pending"></span>Pending</span>
+                </div>
+              </div>
+              
+              <div class="timeline-container">
+                <div class="timeline-track">
+                  <div 
+                    *ngFor="let segment of segments; let i = index" 
+                    class="segment-block"
+                    [class.loaded]="segment.status === 'loaded'"
+                    [class.playing]="segment.status === 'playing'"
+                    [class.buffered]="segment.status === 'buffered'"
+                    [class.pending]="segment.status === 'pending'"
+                    [class.error]="segment.status === 'error'"
+                    [class.selected]="selectedSegmentIndex === i"
+                    [style.width.%]="(segment.duration / totalDuration) * 100"
+                    [title]="getSegmentTooltip(segment, i)"
+                    (click)="selectSegment(segment, i)"
+                  >
+                    <div class="segment-progress" [style.width.%]="segment.progress"></div>
+                  </div>
+                </div>
+                
+                <div class="timeline-markers">
+                  <div 
+                    *ngFor="let marker of timeMarkers" 
+                    class="time-marker"
+                    [style.left.%]="marker.position"
+                  >
+                    <span class="marker-time">{{ marker.time }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="segment-details" *ngIf="selectedSegment">
+                <h4>Segment {{ selectedSegmentIndex + 1 }} Details</h4>
+                <div class="details-grid">
+                  <div class="detail-item">
+                    <span class="detail-label">Duration:</span>
+                    <span class="detail-value">{{ selectedSegment.duration.toFixed(2) }}s</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Size:</span>
+                    <span class="detail-value">{{ formatBytes(selectedSegment.size) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Bitrate:</span>
+                    <span class="detail-value">{{ Math.round(selectedSegment.bitrate / 1000) }} kbps</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value status-{{ selectedSegment.status }}">{{ selectedSegment.status.toUpperCase() }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">URL:</span>
+                    <span class="detail-value url">{{ selectedSegment.url }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

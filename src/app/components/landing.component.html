@@ -1,0 +1,188 @@
+<div class="landing-container">
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="title-icon">🎬</span>
+        VidStream
+      </h1>
+      <p class="hero-subtitle">
+        Professional HLS Video Streaming Platform
+      </p>
+      <p class="hero-description">
+        Experience adaptive bitrate streaming with real-time analytics, 
+        network simulation, and advanced debugging tools for developers.
+      </p>
+      
+      <div class="hero-actions">
+        <a routerLink="/compare" class="cta-button primary">
+          <span class="button-icon">⚡</span>
+          Compare Streams
+        </a>
+        <button class="cta-button secondary" (click)="scrollToStreams()">
+          <span class="button-icon">📺</span>
+          Browse Videos
+        </button>
+      </div>
+    </div>
+    
+    <div class="hero-visual">
+      <div class="floating-card">
+        <div class="card-header">
+          <div class="card-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="card-title">Stream Analytics</span>
+        </div>
+        <div class="card-content">
+          <div class="metric-row">
+            <span class="metric-label">Bitrate:</span>
+            <span class="metric-value">{{ demoMetrics.bitrate }} kbps</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Quality:</span>
+            <span class="metric-value">{{ demoMetrics.quality }}</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Buffer:</span>
+            <span class="metric-value">{{ demoMetrics.buffer }}s</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="demoMetrics.progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-section">
+    <div class="section-header">
+      <h2>🚀 Platform Features</h2>
+      <p>Everything you need for professional video streaming analysis</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Real-time Analytics</h3>
+        <p>Monitor bitrate, quality levels, buffer health, and performance metrics in real-time</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Network Simulation</h3>
+        <p>Test streaming performance under various network conditions from 3G to WiFi</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <h3>Developer Tools</h3>
+        <p>Advanced debugging with HLS manifest inspection and segment timeline visualization</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⚖️</div>
+        <h3>Side-by-Side Comparison</h3>
+        <p>Compare streaming performance between different network conditions simultaneously</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Adaptive Streaming</h3>
+        <p>Automatic quality adjustment based on network conditions and device capabilities</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>High Performance</h3>
+        <p>Optimized HLS.js integration with efficient buffering and minimal latency</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="streams-section" #streamsSection>
+    <div class="section-header">
+      <h2>🎥 Available Streams</h2>
+      <p>Choose from our collection of test streams to explore the platform</p>
+    </div>
+    
+    <div class="streams-grid">
+      <div 
+        *ngFor="let stream of availableStreams" 
+        class="stream-card"
+        (click)="selectStream(stream)"
+      >
+        <div class="stream-thumbnail">
+          <img [src]="stream.thumbnail" [alt]="stream.title" />
+          <div class="play-overlay">
+            <div class="play-button">
+              <span class="play-icon">▶️</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stream-info">
+          <h3 class="stream-title">{{ stream.title }}</h3>
+          <p class="stream-description">{{ stream.description }}</p>
+          
+          <div class="stream-meta">
+            <div class="meta-item">
+              <span class="meta-icon">🎬</span>
+              <span class="meta-text">{{ stream.duration }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">📺</span>
+              <span class="meta-text">{{ stream.resolution }}</span>
+            </div>
+          </div>
+          
+          <div class="stream-actions">
+            <button class="action-btn primary" (click)="selectStream(stream); $event.stopPropagation()">
+              <span class="btn-icon">▶️</span>
+              Watch Now
+            </button>
+            <button class="action-btn secondary" (click)="openInComparison(stream); $event.stopPropagation()">
+              <span class="btn-icon">⚖️</span>
+              Compare
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tech-section">
+    <div class="section-header">
+      <h2>🛠️ Technology Stack</h2>
+      <p>Built with modern web technologies for optimal performance</p>
+    </div>
+    
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-icon">🅰️</div>
+        <span class="tech-name">Angular 18</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📺</div>
+        <span class="tech-name">HLS.js</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🎨</div>
+        <span class="tech-name">CSS3</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">⚡</div>
+        <span class="tech-name">TypeScript</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🌐</div>
+        <span class="tech-name">WebRTC</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📊</div>
+        <span class="tech-name">Real-time Analytics</span>
+      </div>
+    </div>
+  </div>
+</div>
