@@ -26,11 +26,12 @@
 .app-title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: white;
+  color: #f8fafc;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .title-icon {

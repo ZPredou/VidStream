@@ -39,8 +39,9 @@ export class PlayerComponent implements AfterViewInit, OnDestroy {
     bufferHealth: 0,
     droppedFrames: 0,
     qualityLevel: 'Loading...',
+    quality: 'Loading...',
     currentLevel: -1,
-    availableLevels: []
+    loadedLevels: []
   };
 
   consoleLogs: LogEntry[] = [];
@@ -62,10 +63,22 @@ export class PlayerComponent implements AfterViewInit, OnDestroy {
     private readonly cdr: ChangeDetectorRef,
     private readonly ngZone: NgZone
   ) {
-    // Get stream from route state
+    // Get stream from route state first
     const navigation = history.state;
     if (navigation?.stream) {
       this.currentStream = navigation.stream;
+    } else {
+      // Fallback to query parameters for backward compatibility
+      this.route.queryParams.subscribe(params => {
+        if (params['url']) {
+          this.currentStream = {
+            url: params['url'],
+            title: params['name'] || 'Unknown Stream',
+            type: params['type'] || 'hls',
+            description: 'Stream loaded from URL'
+          };
+        }
+      });
     }
   }
 

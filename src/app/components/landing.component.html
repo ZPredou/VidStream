@@ -14,7 +14,7 @@
       </p>
       
       <div class="hero-actions">
-        <a routerLink="/compare" class="cta-button primary">
+        <a routerLink="/comparison" class="cta-button primary">
           <span class="button-icon">⚡</span>
           Compare Streams
         </a>
@@ -25,35 +25,7 @@
       </div>
     </div>
     
-    <div class="hero-visual">
-      <div class="floating-card">
-        <div class="card-header">
-          <div class="card-dots">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
-          </div>
-          <span class="card-title">Stream Analytics</span>
-        </div>
-        <div class="card-content">
-          <div class="metric-row">
-            <span class="metric-label">Bitrate:</span>
-            <span class="metric-value">{{ demoMetrics.bitrate }} kbps</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Quality:</span>
-            <span class="metric-value">{{ demoMetrics.quality }}</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Buffer:</span>
-            <span class="metric-value">{{ demoMetrics.buffer }}s</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="demoMetrics.progress"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </div>
 
   <div class="features-section">
@@ -152,36 +124,47 @@
     </div>
   </div>
 
-  <div class="tech-section">
+  <div class="features-section">
     <div class="section-header">
       <h2>🛠️ Technology Stack</h2>
       <p>Built with modern web technologies for optimal performance</p>
     </div>
-    
-    <div class="tech-grid">
-      <div class="tech-item">
-        <div class="tech-icon">🅰️</div>
-        <span class="tech-name">Angular 18</span>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🅰️</div>
+        <h3>Angular 18</h3>
+        <p>Modern framework with standalone components and zoneless change detection</p>
       </div>
-      <div class="tech-item">
-        <div class="tech-icon">📺</div>
-        <span class="tech-name">HLS.js</span>
+
+      <div class="feature-card">
+        <div class="feature-icon">📺</div>
+        <h3>HLS.js</h3>
+        <p>JavaScript library for adaptive streaming with MSE and EME support</p>
       </div>
-      <div class="tech-item">
-        <div class="tech-icon">🎨</div>
-        <span class="tech-name">CSS3</span>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>TypeScript</h3>
+        <p>Type-safe development with enhanced IDE support and error prevention</p>
       </div>
-      <div class="tech-item">
-        <div class="tech-icon">⚡</div>
-        <span class="tech-name">TypeScript</span>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Modern CSS</h3>
+        <p>Advanced styling with CSS Grid, Flexbox, and custom properties</p>
       </div>
-      <div class="tech-item">
-        <div class="tech-icon">🌐</div>
-        <span class="tech-name">WebRTC</span>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Web APIs</h3>
+        <p>Leveraging MediaSource Extensions and modern browser capabilities</p>
       </div>
-      <div class="tech-item">
-        <div class="tech-icon">📊</div>
-        <span class="tech-name">Real-time Analytics</span>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Real-time Data</h3>
+        <p>Live metrics and analytics with efficient change detection</p>
       </div>
     </div>
   </div>

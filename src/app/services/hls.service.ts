@@ -6,6 +6,7 @@ export interface StreamMetrics {
   bufferHealth: number;
   droppedFrames: number;
   qualityLevel: string;
+  quality: string;
   currentLevel: number;
   loadedLevels: any[];
 }
@@ -278,6 +279,9 @@ export class HlsService {
       droppedFrames: 0, // We'll track this separately if needed
       qualityLevel: currentLevel >= 0 && levels[currentLevel]
         ? `${levels[currentLevel].height}p (${Math.round(levels[currentLevel].bitrate / 1000)}kbps)`
+        : 'Auto',
+      quality: currentLevel >= 0 && levels[currentLevel]
+        ? `${levels[currentLevel].height}p`
         : 'Auto',
       currentLevel,
       loadedLevels: levels

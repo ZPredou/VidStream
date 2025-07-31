@@ -11,25 +11,31 @@ import { HlsService } from '../services/hls.service';
   styleUrls: ['./comparison.component.css']
 })
 export class ComparisonComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('videoPlayerA') videoPlayerA!: ElementRef<HTMLVideoElement>;
-  @ViewChild('videoPlayerB') videoPlayerB!: ElementRef<HTMLVideoElement>;
+  @ViewChild('videoElementA') videoPlayerA!: ElementRef<HTMLVideoElement>;
+  @ViewChild('videoElementB') videoPlayerB!: ElementRef<HTMLVideoElement>;
 
   networkSpeed = 'unlimited';
   currentThrottle = 'unlimited';
+  selectedNetworkSpeed = 0;
+  notificationMessage = '';
+  showNotification = false;
 
   availableStreams = [
     {
       name: 'Big Buck Bunny',
+      title: 'Big Buck Bunny',
       url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
       description: 'Classic test stream'
     },
     {
       name: 'Sintel',
+      title: 'Sintel',
       url: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
       description: 'High quality test stream'
     },
     {
       name: 'Tears of Steel',
+      title: 'Tears of Steel',
       url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
       description: 'Multi-bitrate stream'
     }
@@ -131,17 +137,21 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
   private applyThrottling() {
     // Apply network throttling to Player B only
     const throttleSettings = this.getThrottleSettings(this.currentThrottle);
-    // Note: Network throttling would be implemented in the HlsService
-    // For now, this is a placeholder for the throttling functionality
-    if (throttleSettings && (this.playerB.hlsService as any).setNetworkThrottle) {
-      (this.playerB.hlsService as any).setNetworkThrottle(throttleSettings);
+    if (throttleSettings) {
+      // Use the downloadBandwidth for bandwidth limiting
+      this.playerB.hlsService.setMaxBandwidth(throttleSettings.downloadBandwidth);
+    } else {
+      // Remove bandwidth limit
+      this.playerB.hlsService.setMaxBandwidth(0);
     }
   }
 
   private getThrottleSettings(throttle: string) {
     switch (throttle) {
+      case 'slow-3g':
+        return { downloadBandwidth: 400000, uploadBandwidth: 200000, latency: 500 }; // 400 Kbps down, 200 Kbps up, 500ms latency
       case '3g':
-        return { downloadBandwidth: 1000000, uploadBandwidth: 500000, latency: 300 }; // 1 Mbps down, 500 Kbps up, 300ms latency
+        return { downloadBandwidth: 1500000, uploadBandwidth: 750000, latency: 300 }; // 1.5 Mbps down, 750 Kbps up, 300ms latency
       case '4g':
         return { downloadBandwidth: 5000000, uploadBandwidth: 2000000, latency: 100 }; // 5 Mbps down, 2 Mbps up, 100ms latency
       case 'wifi':
@@ -153,7 +163,8 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
 
   getThrottleLabel(throttle: string): string {
     switch (throttle) {
-      case '3g': return '3G (1 Mbps)';
+      case 'slow-3g': return 'Slow 3G (400 Kbps)';
+      case '3g': return 'Fast 3G (1.5 Mbps)';
       case '4g': return '4G (5 Mbps)';
       case 'wifi': return 'WiFi (25 Mbps)';
       default: return 'Unlimited';
@@ -223,5 +234,38 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
   applyNetworkThrottling() {
     // Legacy method for backward compatibility
     this.setNetworkThrottle(this.networkSpeed);
+  }
+
+  onNetworkSpeedChange() {
+    const speed = this.selectedNetworkSpeed;
+
+    // Apply bandwidth limit to Player B
+    this.playerB.hlsService.setMaxBandwidth(speed);
+
+    if (speed > 0) {
+      this.showNotification = true;
+      this.notificationMessage = `Network throttling applied: ${this.getSpeedLabel(speed)}`;
+      setTimeout(() => {
+        this.showNotification = false;
+        this.notificationMessage = '';
+      }, 3000);
+    } else {
+      this.showNotification = true;
+      this.notificationMessage = 'Network throttling disabled';
+      setTimeout(() => {
+        this.showNotification = false;
+        this.notificationMessage = '';
+      }, 3000);
+    }
+  }
+
+  private getSpeedLabel(speed: number): string {
+    switch (speed) {
+      case 400000: return 'Slow 3G (400 Kbps)';
+      case 1500000: return 'Fast 3G (1.5 Mbps)';
+      case 5000000: return '4G (5 Mbps)';
+      case 25000000: return 'WiFi (25 Mbps)';
+      default: return 'Unlimited';
+    }
   }
 }

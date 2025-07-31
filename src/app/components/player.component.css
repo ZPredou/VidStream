@@ -49,7 +49,8 @@
 .overlay-content h2 {
   margin: 0 0 1rem 0;
   font-size: 2rem;
-  color: white;
+  color: #f8fafc;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .overlay-content p {
@@ -67,7 +68,8 @@
 .video-info h2 {
   margin: 0 0 0.5rem 0;
   font-size: 1.8rem;
-  color: white;
+  color: #f1f5f9;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .video-description {
@@ -146,9 +148,10 @@
 
 .dev-panel h3 {
   margin: 0 0 1rem 0;
-  color: white;
+  color: #f1f5f9;
   font-size: 1.25rem;
   text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .dev-tabs {
